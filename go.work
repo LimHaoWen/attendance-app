@@ -1,6 +1,3 @@
 go 1.21.3
 
-use ./src/server
-use ./src/static
-use ./src/database
 use .
