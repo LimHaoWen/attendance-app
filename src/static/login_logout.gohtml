@@ -45,10 +45,10 @@
             </form>
         </div>
         <div class="sessInfo">
-            {{if and (.First) (eq .Error "") (ne .Username "admin")}}
+            {{ if and (.First) (eq .Error "") (ne .Username "admin") }}
                 <p>Welcome to class {{.Username}}!</p>
                 <p>Your attendance has been marked on {{ .TimeIn }}</p>
-            {{end}}
+            {{ end }}
         </div>
     </div>
 

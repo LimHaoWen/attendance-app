@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,16 +22,39 @@ type User struct {
 	Error    string    `json:"error"`
 }
 
+type Message struct {
+	ExportedMessage string
+	LoadedMessage   string
+}
+
+type AdminData struct {
+	User User
+	Data Message
+}
+
 var tmpl *template.Template
 var errorMessage string
+var successMessage string
 var mapUsers = map[string]User{}
 var mapSessions = map[string]string{}
 
 func init() {
+	// Loading of environment variables
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file:", err)
+	}
+
+	// Loading of static files
 	tmpl = template.Must(template.ParseGlob("src/static/*"))
 	http.Handle("/src/static/", http.StripPrefix("/src/static/", http.FileServer(http.Dir("./src/static"))))
-	bPassword, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.MinCost)
-	mapUsers["admin"] = User{"admin", bPassword, "admin", "admin", time.Time{}, ""}
+
+	// Initializing of admin account
+	bPassword, err := bcrypt.GenerateFromPassword([]byte(os.Getenv("ADMIN_PASSWORD")), bcrypt.MinCost)
+	if err != nil {
+		fmt.Println("error generating password:", err)
+	}
+	mapUsers["admin"] = User{string(os.Getenv("ADMIN_USERNAME")), bPassword, "admin", "admin", time.Time{}, ""}
 }
 
 func main() {
@@ -37,8 +62,8 @@ func main() {
 	http.HandleFunc("/admin", admin)
 	http.HandleFunc("/signup", signup)
 	http.HandleFunc("/logout", logout)
-	http.HandleFunc("/export", exportAttendance)
-	http.HandleFunc("/import", importAttendance)
+	http.HandleFunc("/admin/export", exportAttendance)
+	http.HandleFunc("/admin/import", importAttendance)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.ListenAndServe(":5332", nil)
 }
@@ -92,8 +117,9 @@ func login(res http.ResponseWriter, req *http.Request) {
 		mapSessions[cookie.Value] = username
 		if username == "admin" {
 			http.Redirect(res, req, "/admin", http.StatusSeeOther)
+		} else {
+			http.Redirect(res, req, "/", http.StatusSeeOther)
 		}
-		http.Redirect(res, req, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -106,11 +132,17 @@ func login(res http.ResponseWriter, req *http.Request) {
 
 func admin(res http.ResponseWriter, req *http.Request) {
 	myUser := getUser(res, req)
+	var data Message
+
+	adminData := AdminData{
+		User: myUser,
+		Data: data,
+	}
 	// if !alreadyLoggedIn(req) {
 	// 	http.Redirect(res, req, "/", http.StatusSeeOther)
 	// 	return
 	// }
-	tmpl.ExecuteTemplate(res, "admin.gohtml", myUser)
+	tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 }
 
 func signup(res http.ResponseWriter, req *http.Request) {
@@ -156,7 +188,7 @@ func signup(res http.ResponseWriter, req *http.Request) {
 			myUser = User{username, bPassword, firstname, lastname, timestamp, ""}
 			mapUsers[username] = myUser
 		}
-		// redirect to main index
+		// redirect to login page
 		http.Redirect(res, req, "/", http.StatusSeeOther)
 		return
 
@@ -239,14 +271,21 @@ func exportAttendance(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Write the JSON data to a file (change the filename as needed)
-	err = os.WriteFile("attendance.json", jsonData, 0644)
+	err = os.WriteFile("data/attendance.json", jsonData, 0644)
 	if err != nil {
 		http.Error(res, "Error writing JSON file", http.StatusInternalServerError)
 		return
 	}
 
-	// Send a success response
-	res.Write([]byte("Attendance data exported successfully"))
+	// Success response
+	adminData := AdminData{}
+	successMessage = "Attendance data exported successfully"
+	adminData.Data.ExportedMessage = successMessage
+	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+	if err != nil {
+		http.Error(res, "Error loading page.", http.StatusNotFound)
+		return
+	}
 }
 
 func importAttendance(res http.ResponseWriter, req *http.Request) {
@@ -270,8 +309,16 @@ func importAttendance(res http.ResponseWriter, req *http.Request) {
 	// Update the mapUsers with the imported attendance data
 	for _, u := range importedAttendance {
 		mapUsers[u.Username] = u
+		fmt.Println(mapUsers[u.Username])
 	}
 
 	// Send a success response
-	res.Write([]byte("Attendance data imported successfully"))
+	adminData := AdminData{}
+	successMessage = "Attendance data loaded successfully"
+	adminData.Data.LoadedMessage = successMessage
+	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+	if err != nil {
+		http.Error(res, "Error loading page.", http.StatusNotFound)
+		return
+	}
 }
