@@ -1,0 +1,26 @@
+[
+  {
+    "Error": "",
+    "First": "admin",
+    "Last": "admin",
+    "Password": "JDJhJDA0JHJzd2x2R1JXRnc1ZUdIMW9JTWNlR09lS3J5cU9Hd0ZJYWlRdWJTZEFYNm9RQlZZYmdQWGNt",
+    "TimeIn": "0001-01-01T00:00:00Z",
+    "Username": "admin"
+  },
+  {
+    "Error": "",
+    "First": "asd",
+    "Last": "asd",
+    "Password": "JDJhJDA0JDY3YVYyZlVZVGZSZGRSL1FaSGtmWGVROUZEMUxLUXJPdE91U2Z0ZjFpYy43SEdScW55ZVBD",
+    "TimeIn": "2023-12-11T16:47:14+08:00",
+    "Username": "asd"
+  },
+  {
+    "Error": "",
+    "First": "jacob",
+    "Last": "lim",
+    "Password": "JDJhJDA0JE5aSVFuc0pNanUvbUtSU29VRU85LnVubkhiWmdKRG1qNVc0a0kva2M5ZlEzUkpQOTNmalZl",
+    "TimeIn": "2023-12-11T16:47:31+08:00",
+    "Username": "Mark"
+  }
+]
