@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./src/static/stylesheet.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="attendanceList"> 
+        <div class="header">
+            <h1>Attendance</h1>
+        </div>
+    
+        <div class="form">
+            <p>Login to take your attendance!</p>
+            <form class="login" method="post">
+                <div class="user">
+                    <label for="username" >Username:</label>
+                    <input type="text" class="username" name="username" required>
+                </div>
+                <div class="pass">
+                    <label for="password" >Password:</label>
+                    <input type="password" class="password" name="password" required>
+                </div>
+                <div class="buttons">
+                    {{ if and (eq .Error "") (.First) }}
+                    <button class="submit" type="submit" style="background-color: #dddddd; color: #aaaaaa; cursor: not-allowed;" disabled>Login</button>
+                    {{ else }}
+                    <button class="submit" type="submit">Login</button>
+                    {{ end }}
+
+                    {{ if .Error }}
+                        <p class="errorMessage">{{ .Error }}</p>
+                    {{ end }}
+
+                    {{ if and (eq .Error "") (.First) }}
+                         <button class="logout" type="button" onclick="redirectToLogout()">Logout</button>
+                    {{ else }}
+                        <p>Sign up for an account! </p>
+                        <button class="signup" type="button" onclick="redirectToSignUp()">Sign Up</button>
+                    {{ end }}
+                </div>
+            </form>
+        </div>
+        <div class="sessInfo">
+            {{if and (.First) (eq .Error "") (ne .Username "admin")}}
+                <p>Welcome to class {{.Username}}!</p>
+                <p>Your attendance has been marked on {{ .TimeIn }}</p>
+            {{end}}
+        </div>
+    </div>
+
+    <script>
+        function redirectToSignUp() {
+            window.location.href = '/signup';
+        }
+
+        function redirectToLogout() {
+            window.location.href = '/logout';
+        }
+    </script>
+</body>
+</html>

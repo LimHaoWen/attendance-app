@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./src/static/stylesheet.css">
+</head>
+<body>
+    <div class="attendanceList"> 
+        <div class="header">
+            <h1>Admin page</h1>
+        </div>
+
+        <div class="form">
+            <!-- Export Attendance List Button -->
+            <div>
+                <label for="fileExport">Export Attendance List:</label>
+            </div>
+            <div>
+                <button class="exportButton" onclick="exportAttendance()">Export Attendance List</button>
+            </div>
+
+            <!-- Load Attendance List Form -->
+            <form class="loadForm">
+                <div>
+                    <label for="fileInput">Load Attendance List:</label>
+                </div>
+                <div class="fileInput">
+                    <input type="file" accept=".csv, .txt, .json, .xml" required>
+                </div>
+                <button type="button" onclick="importAttendance()">Load</button>
+            </form>
+            <div>
+                <button class="adminlogout" type="button" onclick="redirectToLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function redirectToLogout() {
+            window.location.href = '/logout';
+        }
+
+        function exportAttendance() {
+            window.location.href = '/export';
+        }
+         function importAttendance() {
+            window.location.href = '/import';
+        }
+    </script>
+</body>
+</html>

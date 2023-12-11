@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./src/static/stylesheet.css">
+    <title>Sign Up</title>
+</head>
+
+<body>
+    <div class="attendanceList"> 
+        <div class="header">
+            <h1>Account creation</h1>
+        </div>
+    
+        <div class="form">
+            <p>Enter your details!</p>
+            <form class="signup" method="post">
+                <div class="user">
+                    <label for="username">Username:</label>
+                    <input type="text" class="username" name="username" required>
+                </div>
+
+                <div class="pass">
+                    <label for="password">Password:</label>
+                    <input type="password" class="password" name="password" required>
+                </div>
+
+                <div class="name">
+                    <label for="firstname">First Name:</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+
+                <div class="name">
+                    <label for="lastname">Last Name:</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+                <div class="buttons">
+                    <button class="submit" type="submit">Create account</button>
+                    <p class="errorMessage">{{ .Error }}</p>
+                    <p>Already have an account? <a href="/">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function redirectToSignUp() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
