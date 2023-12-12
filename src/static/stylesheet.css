@@ -98,6 +98,10 @@ body {
     margin-top: 20px;
 }
 
+.exportForm {
+    margin-top: 20px;
+}
+
 .loadFile {
     width: 200px;
 }

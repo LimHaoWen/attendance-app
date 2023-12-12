@@ -1,11 +1,18 @@
 package main
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/json"
+	"encoding/xml"
+	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -14,12 +21,12 @@ import (
 )
 
 type User struct {
-	Username string    `json:"username"`
-	Password []byte    `json:"password"`
-	First    string    `json:"first"`
-	Last     string    `json:"last"`
-	TimeIn   time.Time `json:"time_in"`
-	Error    string    `json:"error"`
+	Username string    `json:"username" xml:"username"`
+	Password []byte    `json:"password" xml:"password"`
+	First    string    `json:"first" xml:"first"`
+	Last     string    `json:"last" xml:"last"`
+	TimeIn   time.Time `json:"time_in" xml:"time_in"`
+	Error    string    `json:"error" xml:"error"`
 }
 
 type Message struct {
@@ -247,39 +254,57 @@ func alreadyLoggedIn(req *http.Request) bool {
 }
 
 func exportAttendance(res http.ResponseWriter, req *http.Request) {
-	// Create a slice to store attendance data
-	var attendanceData []map[string]interface{}
+	// Create a slice to store users' data
+	var usersData []User
 
-	// Iterate over the mapUsers to collect attendance data
 	for _, u := range mapUsers {
-		userAttendance := map[string]interface{}{
-			"Username": u.Username,
-			"Password": u.Password,
-			"First":    u.First,
-			"Last":     u.Last,
-			"TimeIn":   u.TimeIn.Format(time.RFC3339),
-			"Error":    u.Error,
-		}
-		attendanceData = append(attendanceData, userAttendance)
+		usersData = append(usersData, u)
 	}
 
-	// Convert the attendanceData slice to JSON
-	jsonData, err := json.MarshalIndent(attendanceData, "", "  ")
-	if err != nil {
-		http.Error(res, "Error marshaling JSON", http.StatusInternalServerError)
+	adminData := AdminData{}
+	var exportData []byte
+	var fileName string
+	var err error
+	fileType := req.URL.Query().Get("fileType")
+
+	// Choose the appropriate export format based on the fileType parameter
+	switch fileType {
+	case "xml":
+		exportData, err = xml.MarshalIndent(usersData, "", "  ")
+		fileName = "data/attendance.xml"
+	case "csv":
+		exportData, err = exportCSV(usersData)
+		fileName = "data/attendance.csv"
+	case "json":
+		exportData, err = json.MarshalIndent(usersData, "", "  ")
+		fileName = "data/attendance.json"
+	default:
+		http.Error(res, "Unsupported file type", http.StatusBadRequest)
 		return
 	}
 
-	// Write the JSON data to a file (change the filename as needed)
-	err = os.WriteFile("data/attendance.json", jsonData, 0644)
 	if err != nil {
-		http.Error(res, "Error writing JSON file", http.StatusInternalServerError)
+		myUser := getUser(res, req)
+		adminData.User = myUser
+		errorMessage := "Error marshaling " + fileType
+		adminData.User.Error = errorMessage
+		err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+		if err != nil {
+			http.Error(res, "Error loading page.", http.StatusNotFound)
+		}
+		return
+	}
+
+	// Write data to specified file type
+	err = os.WriteFile(fileName, exportData, 0644)
+	if err != nil {
+		http.Error(res, "Error writing "+fileType+" file", http.StatusInternalServerError)
 		return
 	}
 
 	// Success response
-	adminData := AdminData{}
-	successMessage = "Attendance data exported successfully"
+	adminData = AdminData{}
+	successMessage = fmt.Sprintf("Attendance exported to %s successfully", fileType)
 	adminData.Data.ExportedMessage = successMessage
 	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 	if err != nil {
@@ -289,36 +314,177 @@ func exportAttendance(res http.ResponseWriter, req *http.Request) {
 }
 
 func importAttendance(res http.ResponseWriter, req *http.Request) {
-	// Read the JSON data from the file (change the filename as needed)
-	jsonData, err := os.ReadFile("attendance.json")
+	var usersData []User
+	var importData []byte
+	var err error
+
+	// Get the file from file input form
+	file, fileName, err := req.FormFile("file")
 	if err != nil {
-		http.Error(res, "Error reading JSON file", http.StatusInternalServerError)
+		http.Error(res, "Error parsing file from the request", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Determine the file type based on the file name extension
+	fileType := filepath.Ext(fileName.Filename)
+	fileType = strings.TrimPrefix(fileType, ".")
+
+	switch fileType {
+	case "xml":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		err = xml.Unmarshal(importData, &usersData)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	case "csv":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		usersData, err = importCSV(importData)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	case "json":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		err = json.Unmarshal(importData, &usersData)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	default:
+		http.Error(res, "Unsupported file type", http.StatusBadRequest)
 		return
 	}
 
-	// Create a slice to store imported attendance data
-	var importedAttendance []User
-
-	// Unmarshal the JSON data into the importedAttendance slice
-	err = json.Unmarshal(jsonData, &importedAttendance)
-	if err != nil {
-		http.Error(res, "Error unmarshaling JSON", http.StatusInternalServerError)
-		return
+	// Create a map to store users based on their username
+	for _, user := range usersData {
+		mapUsers[user.Username] = user
 	}
 
-	// Update the mapUsers with the imported attendance data
-	for _, u := range importedAttendance {
-		mapUsers[u.Username] = u
-		fmt.Println(mapUsers[u.Username])
-	}
+	fmt.Println(mapUsers)
 
-	// Send a success response
+	// Success response
 	adminData := AdminData{}
-	successMessage = "Attendance data loaded successfully"
+	successMessage := fmt.Sprintf("Attendance imported from %s successfully", fileType)
 	adminData.Data.LoadedMessage = successMessage
 	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 	if err != nil {
 		http.Error(res, "Error loading page.", http.StatusNotFound)
 		return
 	}
+}
+
+func exportCSV(data []User) ([]byte, error) {
+	// Create a slice of slice where data is stored
+	var csvData [][]string
+
+	// Create a header row
+	header := []string{"Username", "Password", "First", "Last", "TimeIn", "Error"}
+	csvData = append(csvData, header)
+
+	// Add data rows
+	for _, user := range data {
+		csvRow := []string{
+			user.Username,
+			string(user.Password),
+			user.First,
+			user.Last,
+			user.TimeIn.Format("2006-01-02 15:04:05 -0700 MST"),
+			user.Error,
+		}
+		csvData = append(csvData, csvRow)
+	}
+
+	// Write CSV data to a buffer
+	var buff bytes.Buffer
+	writer := csv.NewWriter(&buff)
+	err := writer.WriteAll(csvData)
+	if err != nil {
+		return nil, err
+	}
+
+	return buff.Bytes(), nil
+}
+
+func importCSV(data []byte) ([]User, error) {
+	var users []User
+
+	// Create a reader from the CSV data
+	reader := csv.NewReader(bytes.NewReader(data))
+
+	// Read all records from the CSV
+	records, err := reader.ReadAll()
+	fmt.Println(records)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if there is at least one row (excluding the header)
+	if len(records) < 2 {
+		return nil, errors.New("CSV file does not contain data rows")
+	}
+
+	// Iterate over the records and convert them to User structs
+	for i := 1; i < len(records); i++ {
+		record := records[i]
+
+		// Ensure the record has the expected number of fields
+		if len(record) != 6 {
+			return nil, fmt.Errorf("CSV record at line %d has an incorrect number of fields", i+1)
+		}
+
+		// Parse the TimeIn field
+		timeIn, err := time.Parse("2006-01-02 15:04:05 -0700 MST", record[4])
+		if err != nil {
+			return nil, fmt.Errorf("error parsing TimeIn field at line %d: %v", i+1, err)
+		}
+
+		// Create a User struct and append it to the users slice
+		user := User{
+			Username: record[0],
+			Password: []byte(record[1]),
+			First:    record[2],
+			Last:     record[3],
+			TimeIn:   timeIn,
+			Error:    record[5],
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }

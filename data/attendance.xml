@@ -1,0 +1,16 @@
+<User>
+  <username>admin</username>
+  <password>$2a$04$.95swcUHaAMezkiqLX8gKuVJxXXT0kB35JU8pRYEztAQCRp.wxmUW</password>
+  <first>admin</first>
+  <last>admin</last>
+  <time_in>0001-01-01T00:00:00Z</time_in>
+  <error></error>
+</User>
+<User>
+  <username>mark</username>
+  <password>$2a$04$uErU/G716lhvCEmtrPAdFe9QHjB3ewLF.OI9vuC6md8sFm4hVa.lq</password>
+  <first>mark</first>
+  <last>mark</last>
+  <time_in>2023-12-12T12:16:13+08:00</time_in>
+  <error></error>
+</User>

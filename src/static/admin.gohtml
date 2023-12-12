@@ -16,23 +16,34 @@
             <div>
                 <label for="fileExport">Export Attendance List:</label>
             </div>
-            <div>
+            <div class="exportForm">
                 {{ if .Data.ExportedMessage }}
                     <p>{{ .Data.ExportedMessage }}</p>
                 {{ end }}
+                {{ if .User.Error }}
+                    <p>{{ .User.Error }}</p>
+                {{ end }}
+                <label for="fileType">Select File Type:</label>
+                <select name="fileType" id="fileType">
+                    <option value="json">JSON</option>
+                    <option value="xml">XML</option>
+                    <option value="csv">CSV</option>
+                </select>
                 <button class="exportButton" onclick="exportAttendance()">Export Attendance List</button>
             </div>
-            <form class="loadForm">
+            <form class="loadForm" action="/admin/import" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="fileInput">Load Attendance List:</label>
                 </div>
                 <div class="fileInput">
-                    <input type="file" accept=".csv, .txt, .json, .xml" required>
+                    <input type="file" name="file" accept=".csv, .json, .xml" required>
                 </div>
                 {{ if .Data.LoadedMessage }}
                     <p>{{ .Data.LoadedMessage }}</p>
                 {{ end }}
-                <button type="button" onclick="importAttendance()">Load</button>
+                <div>
+                    <button type="submit">Upload</button>
+                </div>
             </form>
             <div>
                 <button class="adminlogout" type="button" onclick="redirectToLogout()">Logout</button>
@@ -42,11 +53,8 @@
     
     <script>
         function exportAttendance() {
-            window.location.href = '/admin/export';
-        }
-
-        function importAttendance() {
-            window.location.href = '/admin/import';
+            var fileType = document.getElementById("fileType").value;
+            window.location.href = '/admin/export?fileType=' + fileType;
         }
 
         function redirectToLogout() {
