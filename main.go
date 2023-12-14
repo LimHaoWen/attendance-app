@@ -66,7 +66,7 @@ func init() {
 
 func main() {
 	http.HandleFunc("/", login)
-	http.HandleFunc("/admin", admin)
+	//http.HandleFunc("/admin", admin)
 	http.HandleFunc("/signup", signup)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/admin/export", exportAttendance)
@@ -113,7 +113,7 @@ func login(res http.ResponseWriter, req *http.Request) {
 		}
 		// Create a session
 		id := uuid.NewV4()
-		timestamp := time.Now().In(time.FixedZone("SGT", 8*60*60))
+		timestamp := time.Now().In(time.FixedZone("SGT", 8*60*60)).Truncate(time.Second)
 		// expirationTime := time.Now().Add(6 * time.Hour).In(time.FixedZone("SGT", 8*60*60))
 		cookie := &http.Cookie{
 			Name:  "sessionCookie",
@@ -123,7 +123,15 @@ func login(res http.ResponseWriter, req *http.Request) {
 		myUser.TimeIn = timestamp
 		mapSessions[cookie.Value] = username
 		if username == "admin" {
-			http.Redirect(res, req, "/admin", http.StatusSeeOther)
+			//http.Redirect(res, req, "/admin", http.StatusSeeOther)
+			myUser := getUser(res, req)
+			var data Message
+
+			adminData := AdminData{
+				User: myUser,
+				Data: data,
+			}
+			tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 		} else {
 			http.Redirect(res, req, "/", http.StatusSeeOther)
 		}
@@ -137,20 +145,14 @@ func login(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func admin(res http.ResponseWriter, req *http.Request) {
-	myUser := getUser(res, req)
-	var data Message
+// func admin(res http.ResponseWriter, req *http.Request) {
 
-	adminData := AdminData{
-		User: myUser,
-		Data: data,
-	}
-	// if !alreadyLoggedIn(req) {
-	// 	http.Redirect(res, req, "/", http.StatusSeeOther)
-	// 	return
-	// }
-	tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-}
+// 	// if !alreadyLoggedIn(req) {
+// 	// 	http.Redirect(res, req, "/", http.StatusSeeOther)
+// 	// 	return
+// 	// }
+
+// }
 
 func signup(res http.ResponseWriter, req *http.Request) {
 	if alreadyLoggedIn(req) {
@@ -178,7 +180,7 @@ func signup(res http.ResponseWriter, req *http.Request) {
 			}
 			// create session
 			id := uuid.NewV4()
-			timestamp := time.Now().In(time.FixedZone("SGT", 8*60*60))
+			timestamp := time.Now().In(time.FixedZone("SGT", 8*60*60)).Truncate(time.Second)
 			cookie := &http.Cookie{
 				Name:  "sessionCookie",
 				Value: id.String(),
@@ -255,13 +257,14 @@ func alreadyLoggedIn(req *http.Request) bool {
 
 func exportAttendance(res http.ResponseWriter, req *http.Request) {
 	// Create a slice to store users' data
-	var usersData []User
+	var usersData Users
 
 	for _, u := range mapUsers {
-		usersData = append(usersData, u)
+		usersData.Users = append(usersData.Users, u)
 	}
 
 	adminData := AdminData{}
+	currentDateTime := time.Now().In(time.FixedZone("SGT", 8*60*60)).Truncate(time.Second)
 	var exportData []byte
 	var fileName string
 	var err error
@@ -271,13 +274,13 @@ func exportAttendance(res http.ResponseWriter, req *http.Request) {
 	switch fileType {
 	case "xml":
 		exportData, err = xml.MarshalIndent(usersData, "", "  ")
-		fileName = "data/attendance.xml"
+		fileName = "data/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.xml"
 	case "csv":
-		exportData, err = exportCSV(usersData)
-		fileName = "data/attendance.csv"
+		exportData, err = exportCSV(usersData.Users)
+		fileName = "data/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.csv"
 	case "json":
-		exportData, err = json.MarshalIndent(usersData, "", "  ")
-		fileName = "data/attendance.json"
+		exportData, err = json.MarshalIndent(usersData.Users, "", "  ")
+		fileName = "data/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.json"
 	default:
 		http.Error(res, "Unsupported file type", http.StatusBadRequest)
 		return
@@ -306,101 +309,6 @@ func exportAttendance(res http.ResponseWriter, req *http.Request) {
 	adminData = AdminData{}
 	successMessage = fmt.Sprintf("Attendance exported to %s successfully", fileType)
 	adminData.Data.ExportedMessage = successMessage
-	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-	if err != nil {
-		http.Error(res, "Error loading page.", http.StatusNotFound)
-		return
-	}
-}
-
-func importAttendance(res http.ResponseWriter, req *http.Request) {
-	var usersData []User
-	var importData []byte
-	var err error
-
-	// Get the file from file input form
-	file, fileName, err := req.FormFile("file")
-	if err != nil {
-		http.Error(res, "Error parsing file from the request", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	// Determine the file type based on the file name extension
-	fileType := filepath.Ext(fileName.Filename)
-	fileType = strings.TrimPrefix(fileType, ".")
-
-	switch fileType {
-	case "xml":
-		importData, err = io.ReadAll(file)
-		if err != nil {
-			http.Error(res, "Error reading file", http.StatusInternalServerError)
-			return
-		}
-		err = xml.Unmarshal(importData, &usersData)
-		if err != nil {
-			myUser := getUser(res, req)
-			adminData := AdminData{User: myUser}
-			errorMessage := "Error unmarshaling " + fileType
-			adminData.User.Error = errorMessage
-			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
-	case "csv":
-		importData, err = io.ReadAll(file)
-		if err != nil {
-			http.Error(res, "Error reading file", http.StatusInternalServerError)
-			return
-		}
-		usersData, err = importCSV(importData)
-		if err != nil {
-			myUser := getUser(res, req)
-			adminData := AdminData{User: myUser}
-			errorMessage := "Error unmarshaling " + fileType
-			adminData.User.Error = errorMessage
-			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
-	case "json":
-		importData, err = io.ReadAll(file)
-		if err != nil {
-			http.Error(res, "Error reading file", http.StatusInternalServerError)
-			return
-		}
-		err = json.Unmarshal(importData, &usersData)
-		if err != nil {
-			myUser := getUser(res, req)
-			adminData := AdminData{User: myUser}
-			errorMessage := "Error unmarshaling " + fileType
-			adminData.User.Error = errorMessage
-			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
-	default:
-		http.Error(res, "Unsupported file type", http.StatusBadRequest)
-		return
-	}
-
-	// Create a map to store users based on their username
-	for _, user := range usersData {
-		mapUsers[user.Username] = user
-	}
-
-	fmt.Println(mapUsers)
-
-	// Success response
-	adminData := AdminData{}
-	successMessage := fmt.Sprintf("Attendance imported from %s successfully", fileType)
-	adminData.Data.LoadedMessage = successMessage
 	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 	if err != nil {
 		http.Error(res, "Error loading page.", http.StatusNotFound)
@@ -438,6 +346,106 @@ func exportCSV(data []User) ([]byte, error) {
 	}
 
 	return buff.Bytes(), nil
+}
+
+type Users struct {
+	XMLName xml.Name `xml:"users"`
+	Users   []User   `json:"user" xml:"user"`
+}
+
+func importAttendance(res http.ResponseWriter, req *http.Request) {
+	var usersData Users
+	var importData []byte
+	var err error
+
+	// Get the file from file input form
+	file, fileName, err := req.FormFile("file")
+	if err != nil {
+		http.Error(res, "Error parsing file from the request", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Determine the file type based on the file name extension
+	fileType := filepath.Ext(fileName.Filename)
+	fileType = strings.TrimPrefix(fileType, ".")
+
+	switch fileType {
+	case "xml":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		// modifiedData := []byte("<Users>" + string(importData) + "</Users>")
+		err = xml.Unmarshal(importData, &usersData)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	case "csv":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		usersData.Users, err = importCSV(importData)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	case "json":
+		importData, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(res, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		err = json.Unmarshal(importData, &usersData.Users)
+		if err != nil {
+			myUser := getUser(res, req)
+			adminData := AdminData{User: myUser}
+			errorMessage := "Error unmarshaling " + fileType
+			adminData.User.Error = errorMessage
+			err := tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+			if err != nil {
+				http.Error(res, "Error loading page.", http.StatusNotFound)
+			}
+			return
+		}
+	default:
+		http.Error(res, "Unsupported file type", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(usersData)
+	// Create a map to store users based on their username
+	for _, user := range usersData.Users {
+		mapUsers[user.Username] = user
+	}
+
+	// Success response
+	adminData := AdminData{}
+	successMessage := fmt.Sprintf("Attendance imported from %s successfully", fileType)
+	adminData.Data.LoadedMessage = successMessage
+	err = tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
+	if err != nil {
+		http.Error(res, "Error loading page.", http.StatusNotFound)
+		return
+	}
 }
 
 func importCSV(data []byte) ([]User, error) {

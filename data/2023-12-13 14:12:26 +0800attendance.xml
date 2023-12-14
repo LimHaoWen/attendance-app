@@ -1,0 +1,26 @@
+<users>
+  <user>
+    <username>james</username>
+    <password>$2a$04$muSwTJ4zhlIF2W19wemKG.XQD/nVxh3TLE1q.dLPwweE4H/dGPZh2</password>
+    <first>james</first>
+    <last>james</last>
+    <time_in>2023-12-13T14:02:34+08:00</time_in>
+    <error></error>
+  </user>
+  <user>
+    <username>jane</username>
+    <password>$2a$04$dJExA/YdS9BfyRIMvqlJaucoHZc/7GkC2ZhF1Qyk6idu3HNF0LU9G</password>
+    <first>jane</first>
+    <last>jane</last>
+    <time_in>2023-12-13T14:02:49+08:00</time_in>
+    <error></error>
+  </user>
+  <user>
+    <username>admin</username>
+    <password>$2a$04$5CWpmNt/QUixF0sc0PVZoORAHePtdBIBbgWoN4LGcNNBlTcuhZLcO</password>
+    <first>admin</first>
+    <last>admin</last>
+    <time_in>0001-01-01T00:00:00Z</time_in>
+    <error></error>
+  </user>
+</users>
