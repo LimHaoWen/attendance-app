@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/static/stylesheet.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="attendanceList">
+        <div class="header">
+            <h1>Attendance List</h1>
+        </div>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Date/Time</th>
+                    <th>Attendance</th>
+                </tr>
+                {{range $username, $user := .Users}}
+                    {{if ne $username "admin"}}
+                        <tr>
+                            <td>{{ .Username }}</td>
+                            <td>{{ .First }}</td>
+                            <td>{{ .Last }}</td>
+                            <td>{{ .TimeIn }}</td>
+                            <td>{{ if .Attendance }}Present{{ else }}Absent{{end}}</td>
+                        </tr>
+                    {{end}}
+                {{end}}
+            </table>
+        </div>
+        <div class=exitdiv>
+            <button class="exit" type="button" onclick="backToAdmin()">Exit</button>
+        </div>
+    </div>
+
+    <script>
+    function backToAdmin() {
+        window.location.href = "/login";
+    }
+    </script>
+</body>
+</html>

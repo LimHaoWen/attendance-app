@@ -1,0 +1,106 @@
+[
+    {
+      "username": "tim",
+      "password": "JDJhJDA0JDNROUtIZVlacVlxOGN5VUNhVzVOVU9HUVdEQS8vcnU5TG82SDhyTGVLRG5jQnRwVTRCNFVL",
+      "first": "tim",
+      "last": "tim",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "ash",
+      "password": "JDJhJDA0JG1SMWZVSlJmeWdyTnVMMzZMcFZnc2VLSlhzd2JDcnBQQVY3bkYwaEUyZWh6cFQ3R3VYRW1X",
+      "first": "ash",
+      "last": "ash",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "emma",
+      "password": "JDJhJDA0JFpieFZpMi5oMTJIeTFYb3ZlY1R6T09UbkNNTG5TV2puLzhRbGZSQk5HcVhuVzhjd0ZyMGVt",
+      "first": "emma",
+      "last": "emma",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "sean",
+      "password": "JDJhJDA0JGF2b1Q3bThNZGp4emJHVUNJcFhoc2Vub0JRRE9sS1luaVg4YnRyMklhU3l2WE1MdHJFbS9p",
+      "first": "sean",
+      "last": "sean",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "jess",
+      "password": "JDJhJDA0JEdKcjNaVWZiSE9uU0tDNjVwMXVvZC5VaWIzM3l0WVU1emd5RDJ1MDR2UUJOMDZXOXhkUm1T",
+      "first": "jess",
+      "last": "jess",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "tom",
+      "password": "JDJhJDA0JEdnNHltTHFPbUFxOXh1UWlxOU9HWnVkLkhsaG16OEwxdVJVYy92YThYVUFKTmhQeVFSWjht",
+      "first": "tom",
+      "last": "tom",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "admin",
+      "password": "JDJhJDA0JDUvejRFVjhsOEttWEFtc1BkQ1drRy5PaHl4emNFVHB6RTBaMVB6S24vS1JWQWJYaVkwOFNx",
+      "first": "admin",
+      "last": "admin",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "jane",
+      "password": "JDJhJDA0JFpqNGZvNlhxS2ZYLnlVYy9pakREYnVRYkdmam9XdWRoUy8vc1FkcEptMmhDc25peDNibmJl",
+      "first": "jane",
+      "last": "jane",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "sam",
+      "password": "JDJhJDA0JGpxSThoeEhuQkdLZVN0Q1NVR0hrbHVvRUt5dUVDT0JmdUpnYWxmelovaUE5LjZnL0gzMW9H",
+      "first": "sam",
+      "last": "sam",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "james",
+      "password": "JDJhJDA0JEhsNU15Z05Ua01IcG9TZDNHVS9WYnVJaWtlOHlUTDVUcGdOa3RYejF4MWJhRmpmV0ViS1ND",
+      "first": "james",
+      "last": "james",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "mark",
+      "password": "JDJhJDA0JDQxUmY1TlVIVDZBcS5FdEhENTJYMU85U2RtYkFwMW0veUlqbUNVWlN3aS5aUkRvRVJ1bjh1",
+      "first": "mark",
+      "last": "mark",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "jack",
+      "password": "JDJhJDA0JGpIU2o4d1pOd3JneUpWTUdTeXJZYS5RR1c0LnFoaDZKM2ZpRFNsUkZXQThWa2tqZkFIRGd5",
+      "first": "jack",
+      "last": "jack",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    },
+    {
+      "username": "jim",
+      "password": "JDJhJDA0JE1pZi5tY3FLN1MyWUZNaEQza2tvUWUzOE81UTd0R2hMNi9PSENoNXNHZTFpNXEzUEJZOGMu",
+      "first": "jim",
+      "last": "jim",
+      "time_in": "0001-01-01T00:00:00Z",
+      "attendance": false
+    }
+  ]

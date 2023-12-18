@@ -14,6 +14,20 @@ body {
     height: 80vh;
     margin: 8vh auto 0;
     box-shadow: 5px 5px 5px lightgrey;
+    overflow-y: auto;
+}
+
+.attendanceList::-webkit-scrollbar {
+    width: 5px;
+}
+
+.attendanceList::-webkit-scrollbar-thumb {
+    background-color: #FF2B85;
+    border-radius: 6px;
+}
+
+.attendanceList::-webkit-scrollbar-track {
+    background-color: #FDF2F7;
 }
 
 .header {
@@ -116,6 +130,36 @@ body {
 
 .adminlogout {
     margin-top: 50px;
+}
+
+.view {
+    margin-left: 45px;
+}
+
+/* Styles for attendance list */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #C21760;
+    font-size: 0.9rem;
+}
+
+tr:nth-child(even) {
+    background-color: #FFD3E0;
+}
+
+tr:hover {
+    background-color: #FFA6C9;
+}
+
+.exit {
+    margin-bottom: 20px;
+    margin-left: 400px;
 }
 
 /* Styles for buttons */

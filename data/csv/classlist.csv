@@ -1,0 +1,14 @@
+Username,Password,First,Last,TimeIn,Attendance
+sam,$2a$04$jqI8hxHnBGKeStCSUGHkluoEKyuECOBfuJgalfzZ/iA9.6g/H31oG,sam,sam,0001-01-01 00:00:00 +0000 UTC,false
+james,$2a$04$Hl5MygNTkMHpoSd3GU/VbuIike8yTL5TpgNktXz1x1baFjfWEbKSC,james,james,0001-01-01 00:00:00 +0000 UTC,false
+jim,$2a$04$Mif.mcqK7S2YFMhD3kkoQe38O5Q7tGhL6/OHCh5sGe1i5q3PBY8c.,jim,jim,0001-01-01 00:00:00 +0000 UTC,false
+tim,$2a$04$3Q9KHeYZqYq8cyUCaW5NUOGQWDA//ru9Lo6H8rLeKDncBtpU4B4UK,tim,tim,0001-01-01 00:00:00 +0000 UTC,false
+admin,$2a$04$5/z4EV8l8KmXAmsPdCWkG.OhyxzcETpzE0Z1PzKn/KRVAbXiY08Sq,admin,admin,0001-01-01 00:00:00 +0000 UTC,false
+jane,$2a$04$Zj4fo6XqKfX.yUc/ijDDbuQbGfjoWudhS//sQdpJm2hCsnix3bnbe,jane,jane,0001-01-01 00:00:00 +0000 UTC,false
+mark,$2a$04$41Rf5NUHT6Aq.EtHD52X1O9SdmbAp1m/yIjmCUZSwi.ZRDoERun8u,mark,mark,0001-01-01 00:00:00 +0000 UTC,false
+jack,$2a$04$jHSj8wZNwrgyJVMGSyrYa.QGW4.qhh6J3fiDSlRFWA8VkkjfAHDgy,jack,jack,0001-01-01 00:00:00 +0000 UTC,false
+jess,$2a$04$GJr3ZUfbHOnSKC65p1uod.Uib33ytYU5zgyD2u04vQBN06W9xdRmS,jess,jess,0001-01-01 00:00:00 +0000 UTC,false
+emma,$2a$04$ZbxVi2.h12Hy1XovecTzOOTnCMLnSWjn/8QlfRBNGqXnW8cwFr0em,emma,emma,0001-01-01 00:00:00 +0000 UTC,false
+sean,$2a$04$avoT7m8MdjxzbGUCIpXhsenoBQDOlKYniX8btr2IaSyvXMLtrEm/i,sean,sean,0001-01-01 00:00:00 +0000 UTC,false
+tom,$2a$04$Gg4ymLqOmAq9xuQiq9OGZud.Hlhmz8L1uRUc/va8XUAJNhPyQRZ8m,tom,tom,0001-01-01 00:00:00 +0000 UTC,false
+ash,$2a$04$mR1fUJRfygrNuL36LpVgseKJXswbCrpPAV7nF0hE2ehzpT7GuXEmW,ash,ash,0001-01-01 00:00:00 +0000 UTC,false

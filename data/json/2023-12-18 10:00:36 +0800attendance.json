@@ -1,0 +1,34 @@
+[
+  {
+    "username": "admin",
+    "password": "JDJhJDA0JDUvejRFVjhsOEttWEFtc1BkQ1drRy5PaHl4emNFVHB6RTBaMVB6S24vS1JWQWJYaVkwOFNx",
+    "first": "admin",
+    "last": "admin",
+    "time_in": "0001-01-01T00:00:00Z",
+    "attendance": false
+  },
+  {
+    "username": "mark",
+    "password": "JDJhJDA0JDQxUmY1TlVIVDZBcS5FdEhENTJYMU85U2RtYkFwMW0veUlqbUNVWlN3aS5aUkRvRVJ1bjh1",
+    "first": "mark",
+    "last": "mark",
+    "time_in": "2023-12-18T10:00:12+08:00",
+    "attendance": true
+  },
+  {
+    "username": "jane",
+    "password": "JDJhJDA0JFpqNGZvNlhxS2ZYLnlVYy9pakREYnVRYkdmam9XdWRoUy8vc1FkcEptMmhDc25peDNibmJl",
+    "first": "jane",
+    "last": "jane",
+    "time_in": "2023-12-18T10:00:19+08:00",
+    "attendance": true
+  },
+  {
+    "username": "sam",
+    "password": "JDJhJDA0JGpxSThoeEhuQkdLZVN0Q1NVR0hrbHVvRUt5dUVDT0JmdUpnYWxmelovaUE5LjZnL0gzMW9H",
+    "first": "sam",
+    "last": "sam",
+    "time_in": "2023-12-18T10:00:28+08:00",
+    "attendance": true
+  }
+]

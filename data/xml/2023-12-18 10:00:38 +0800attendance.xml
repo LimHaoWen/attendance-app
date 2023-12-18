@@ -1,0 +1,34 @@
+<users>
+  <user>
+    <username>mark</username>
+    <password>$2a$04$41Rf5NUHT6Aq.EtHD52X1O9SdmbAp1m/yIjmCUZSwi.ZRDoERun8u</password>
+    <first>mark</first>
+    <last>mark</last>
+    <time_in>2023-12-18T10:00:12+08:00</time_in>
+    <attendnace>true</attendnace>
+  </user>
+  <user>
+    <username>jane</username>
+    <password>$2a$04$Zj4fo6XqKfX.yUc/ijDDbuQbGfjoWudhS//sQdpJm2hCsnix3bnbe</password>
+    <first>jane</first>
+    <last>jane</last>
+    <time_in>2023-12-18T10:00:19+08:00</time_in>
+    <attendnace>true</attendnace>
+  </user>
+  <user>
+    <username>sam</username>
+    <password>$2a$04$jqI8hxHnBGKeStCSUGHkluoEKyuECOBfuJgalfzZ/iA9.6g/H31oG</password>
+    <first>sam</first>
+    <last>sam</last>
+    <time_in>2023-12-18T10:00:28+08:00</time_in>
+    <attendnace>true</attendnace>
+  </user>
+  <user>
+    <username>admin</username>
+    <password>$2a$04$5/z4EV8l8KmXAmsPdCWkG.OhyxzcETpzE0Z1PzKn/KRVAbXiY08Sq</password>
+    <first>admin</first>
+    <last>admin</last>
+    <time_in>0001-01-01T00:00:00Z</time_in>
+    <attendnace>false</attendnace>
+  </user>
+</users>

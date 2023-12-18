@@ -1,0 +1,5 @@
+Username,Password,First,Last,TimeIn,Attendance
+admin,$2a$04$5/z4EV8l8KmXAmsPdCWkG.OhyxzcETpzE0Z1PzKn/KRVAbXiY08Sq,admin,admin,0001-01-01 00:00:00 +0000 UTC,false
+mark,$2a$04$41Rf5NUHT6Aq.EtHD52X1O9SdmbAp1m/yIjmCUZSwi.ZRDoERun8u,mark,mark,2023-12-18 10:00:12 +0800 +08,true
+jane,$2a$04$Zj4fo6XqKfX.yUc/ijDDbuQbGfjoWudhS//sQdpJm2hCsnix3bnbe,jane,jane,2023-12-18 10:00:19 +0800 +08,true
+sam,$2a$04$jqI8hxHnBGKeStCSUGHkluoEKyuECOBfuJgalfzZ/iA9.6g/H31oG,sam,sam,2023-12-18 10:00:28 +0800 +08,true

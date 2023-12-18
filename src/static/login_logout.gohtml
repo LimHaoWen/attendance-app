@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./src/static/stylesheet.css">
+    <link rel="stylesheet" href="/src/static/stylesheet.css">
     <title>Document</title>
 </head>
 
@@ -25,17 +25,17 @@
                     <input type="password" class="password" name="password" required>
                 </div>
                 <div class="buttons">
-                    {{ if and (eq .Error "") (.First) }}
+                    {{ if and (eq .Msg.ErrorMessage "") (.User.First) }}
                     <button class="submit" type="submit" style="background-color: #dddddd; color: #aaaaaa; cursor: not-allowed;" disabled>Login</button>
                     {{ else }}
                     <button class="submit" type="submit">Login</button>
                     {{ end }}
 
-                    {{ if .Error }}
-                        <p class="errorMessage">{{ .Error }}</p>
+                    {{ if .Msg.ErrorMessage }}
+                        <p class="errorMessage">{{ .Msg.ErrorMessage }}</p>
                     {{ end }}
 
-                    {{ if and (eq .Error "") (.First) }}
+                    {{ if and (eq .Msg.ErrorMessage "") (.User.First) }}
                          <button class="logout" type="button" onclick="redirectToLogout()">Logout</button>
                     {{ else }}
                         <p>Sign up for an account! </p>
@@ -45,9 +45,9 @@
             </form>
         </div>
         <div class="sessInfo">
-            {{ if and (.First) (eq .Error "") (ne .Username "admin") }}
-                <p>Welcome to class {{.Username}}!</p>
-                <p>Your attendance has been marked on {{ .TimeIn }}</p>
+            {{ if and (.User.First) (eq .Msg.ErrorMessage "") (ne .User.Username "admin") }}
+                <p>Welcome to class {{.User.Username}}!</p>
+                <p>Your attendance has been marked on {{ .User.TimeIn }}</p>
             {{ end }}
         </div>
     </div>

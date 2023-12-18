@@ -17,11 +17,11 @@
                 <label for="fileExport">Export Attendance List:</label>
             </div>
             <div class="exportForm">
-                {{ if .Data.ExportedMessage }}
-                    <p>{{ .Data.ExportedMessage }}</p>
+                {{ if .Msg.ExportedMessage }}
+                    <p>{{ .Msg.ExportedMessage }}</p>
                 {{ end }}
-                {{ if .User.Error }}
-                    <p>{{ .User.Error }}</p>
+                {{ if .Msg.ErrorMessage }}
+                    <p>{{ .Msg.ErrorMessage }}</p>
                 {{ end }}
                 <label for="fileType">Select File Type:</label>
                 <select name="fileType" id="fileType">
@@ -38,11 +38,12 @@
                 <div class="fileInput">
                     <input type="file" name="file" accept=".csv, .json, .xml" required>
                 </div>
-                {{ if .Data.LoadedMessage }}
-                    <p>{{ .Data.LoadedMessage }}</p>
+                {{ if .Msg.LoadedMessage }}
+                    <p>{{ .Msg.LoadedMessage }}</p>
                 {{ end }}
                 <div>
                     <button type="submit">Upload</button>
+                    <button class="view" type="button" onclick="viewAttendance()">View attendance</button>
                 </div>
             </form>
             <div>
@@ -57,9 +58,13 @@
             window.location.href = '/admin/export?fileType=' + fileType;
         }
 
+        function viewAttendance() {
+            window.location.href = '/admin/attendance';
+        }
+
         function redirectToLogout() {
             window.location.href = '/logout';
-        }        
+        } 
     </script>
 </body>
 </html>
