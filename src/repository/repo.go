@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,6 +28,7 @@ type Db struct {
 	Mu       sync.WaitGroup
 	Users    map[string]User   // Mapping of Users
 	Sessions map[string]string // Mapping of Sessions to username
+	Log      *log.Logger
 }
 
 // User represents the user's information and password
@@ -67,10 +69,11 @@ var (
 )
 
 // NewDB returns an instance of a database of Db struct
-func NewDB() *Db {
+func NewDB(logger *log.Logger) *Db {
 	return &Db{
 		Users:    make(map[string]User),
 		Sessions: make(map[string]string),
+		Log:      logger,
 	}
 }
 
@@ -113,6 +116,11 @@ func (d *Db) AlreadyLoggedIn(req *http.Request) bool {
 // ExportAttendnace exports the current attendance base on the file type chosen
 // by the user. Files are stored in the data subfolders based on type of file specified.
 func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
+	user := d.GetUser(res, req)
+	if user.Username != "admin" {
+		http.Redirect(res, req, "/", http.StatusSeeOther)
+	}
+
 	// Creating a slice to store users' data
 	var usersData XMLWrapper
 
@@ -133,23 +141,25 @@ func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
 		exportData, err = xml.MarshalIndent(usersData, "", "  ")
 		fileName = "data/xml/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.xml"
 	case "csv":
-		exportData, err = exportCSV(usersData.Users)
+		exportData, err = d.exportCSV(usersData.Users)
 		fileName = "data/csv/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.csv"
 	case "json":
 		exportData, err = json.MarshalIndent(usersData.Users, "", "  ")
 		fileName = "data/json/" + currentDateTime.Format("2006-01-02 15:04:05 -0700") + "attendance.json"
 	default:
+		d.Log.Println(err)
 		http.Error(res, "Unsupported file type", http.StatusBadRequest)
 		return
 	}
 	if err != nil {
+		d.Log.Println(err)
 		user := d.GetUser(res, req)
 		viewData.User = user
 		errorMessage = "Error marshaling " + fileType
 		viewData.Msg.ErrorMessage = errorMessage
 		err := Tmpl.ExecuteTemplate(res, "admin.gohtml", viewData)
 		if err != nil {
-			http.Error(res, "Error loading page.", http.StatusNotFound)
+			d.Log.Println(err)
 		}
 		return
 	}
@@ -157,17 +167,18 @@ func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
 	// Write data to specified file type
 	err = os.WriteFile(fileName, exportData, 0644)
 	if err != nil {
-		http.Error(res, "Error writing "+fileType+" file", http.StatusInternalServerError)
+		d.Log.Println(err)
 		return
 	}
 
 	// Success response
-	user := d.GetUser(res, req)
+	user = d.GetUser(res, req)
 	viewData.User = user
 	successMessage = fmt.Sprintf("Attendance exported to %s successfully", fileType)
 	viewData.Msg.ExportedMessage = successMessage
 	err = Tmpl.ExecuteTemplate(res, "admin.gohtml", viewData)
 	if err != nil {
+		d.Log.Println(err)
 		http.Error(res, "Error loading page.", http.StatusNotFound)
 		return
 	}
@@ -175,7 +186,7 @@ func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
 
 // exportCSV parses the data passed to it, parsing the data into a
 // slice of slices of users.
-func exportCSV(data []User) ([]byte, error) {
+func (d *Db) exportCSV(data []User) ([]byte, error) {
 	var csvData [][]string
 
 	// Create a header row
@@ -200,6 +211,7 @@ func exportCSV(data []User) ([]byte, error) {
 	writer := csv.NewWriter(&buff)
 	err := writer.WriteAll(csvData)
 	if err != nil {
+		d.Log.Println(err)
 		return nil, err
 	}
 
@@ -209,6 +221,11 @@ func exportCSV(data []User) ([]byte, error) {
 // ImportAttendance parses a file uploaded by the user and adds the data into
 // the database.
 func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
+	user := d.GetUser(res, req)
+	if user.Username != "admin" {
+		http.Redirect(res, req, "/", http.StatusSeeOther)
+	}
+
 	var usersData XMLWrapper
 	var importData []byte
 	var err error
@@ -216,7 +233,7 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 	// Get the file from file input form
 	file, fileName, err := req.FormFile("file")
 	if err != nil {
-		http.Error(res, "Error parsing file from the request", http.StatusBadRequest)
+		d.Log.Println(err)
 		return
 	}
 	defer file.Close()
@@ -230,17 +247,20 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 	case "xml":
 		importData, err = io.ReadAll(file)
 		if err != nil {
+			d.Log.Println(err)
 			http.Error(res, "Error reading file", http.StatusInternalServerError)
 			return
 		}
 		err = xml.Unmarshal(importData, &usersData)
 		if err != nil {
+			d.Log.Println(err)
 			myUser := d.GetUser(res, req)
 			adminData := ViewData{User: myUser}
 			errorMessage = "Error unmarshaling " + fileType
 			viewData.Msg.ErrorMessage = errorMessage
 			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 			if err != nil {
+				d.Log.Println(err)
 				http.Error(res, "Error loading page.", http.StatusNotFound)
 			}
 			return
@@ -248,17 +268,20 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 	case "csv":
 		importData, err = io.ReadAll(file)
 		if err != nil {
+			d.Log.Println(err)
 			http.Error(res, "Error reading file", http.StatusInternalServerError)
 			return
 		}
-		usersData.Users, err = importCSV(importData)
+		usersData.Users, err = d.importCSV(importData)
 		if err != nil {
+			d.Log.Println(err)
 			myUser := d.GetUser(res, req)
 			adminData := ViewData{User: myUser}
 			errorMessage := "Error unmarshaling " + fileType
 			viewData.Msg.ErrorMessage = errorMessage
 			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 			if err != nil {
+				d.Log.Println(err)
 				http.Error(res, "Error loading page.", http.StatusNotFound)
 			}
 			return
@@ -266,22 +289,26 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 	case "json":
 		importData, err = io.ReadAll(file)
 		if err != nil {
+			d.Log.Println(err)
 			http.Error(res, "Error reading file", http.StatusInternalServerError)
 			return
 		}
 		err = json.Unmarshal(importData, &usersData.Users)
 		if err != nil {
+			d.Log.Println(err)
 			myUser := d.GetUser(res, req)
 			adminData := ViewData{User: myUser}
 			errorMessage := "Error unmarshaling " + fileType
 			viewData.Msg.ErrorMessage = errorMessage
 			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
 			if err != nil {
+				d.Log.Println(err)
 				http.Error(res, "Error loading page.", http.StatusNotFound)
 			}
 			return
 		}
 	default:
+		d.Log.Println(err)
 		http.Error(res, "Unsupported file type", http.StatusBadRequest)
 		return
 	}
@@ -301,6 +328,7 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 	viewData.Msg.LoadedMessage = successMessage
 	err = Tmpl.ExecuteTemplate(res, "admin.gohtml", viewData)
 	if err != nil {
+		d.Log.Println(err)
 		http.Error(res, "Error loading page.", http.StatusNotFound)
 		return
 	}
@@ -308,7 +336,7 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 
 // importCSV unmarshals the data read from the uploaded file and store the
 // data in a slice of users.
-func importCSV(data []byte) ([]User, error) {
+func (d *Db) importCSV(data []byte) ([]User, error) {
 	var users []User
 
 	// Create a reader from the CSV data
@@ -317,6 +345,7 @@ func importCSV(data []byte) ([]User, error) {
 	// Read all records from the CSV
 	records, err := reader.ReadAll()
 	if err != nil {
+		d.Log.Println(err)
 		return nil, err
 	}
 

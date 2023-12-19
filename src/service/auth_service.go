@@ -3,6 +3,7 @@ package service
 import (
 	repo "attendanceapp/src/repository"
 	"net/http"
+	"strings"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -28,7 +29,7 @@ func (as *AuthService) Login(res http.ResponseWriter, req *http.Request) {
 	if as.db.AlreadyLoggedIn(req) {
 		user := as.db.GetUser(res, req)
 		if user.Username == "admin" {
-			repo.Tmpl.ExecuteTemplate(res, "admin.gohtml", nil)
+			ExecTemplate(res, "admin.gohtml", "")
 			return
 		}
 		viewData := repo.ViewData{
@@ -36,6 +37,7 @@ func (as *AuthService) Login(res http.ResponseWriter, req *http.Request) {
 		}
 		err := repo.Tmpl.ExecuteTemplate(res, "login_logout.gohtml", viewData)
 		if err != nil {
+			as.db.Log.Println(err)
 			http.Error(res, "Error loading page.", http.StatusNotFound)
 		}
 		return
@@ -44,7 +46,9 @@ func (as *AuthService) Login(res http.ResponseWriter, req *http.Request) {
 	// Process form submission
 	if req.Method == http.MethodPost {
 		username := req.FormValue("username")
+		username = strings.TrimSpace(username)
 		password := req.FormValue("password")
+		password = strings.TrimSpace(password)
 
 		// check if user exist with username
 		user, ok := as.db.Users[username]
@@ -52,23 +56,13 @@ func (as *AuthService) Login(res http.ResponseWriter, req *http.Request) {
 			User: user,
 		}
 		if !ok {
-			errorMessage = "Username and/or password do not match"
-			viewData.Msg.ErrorMessage = errorMessage
-			err := repo.Tmpl.ExecuteTemplate(res, "login_logout.gohtml", viewData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
+			ExecTemplate(res, "login_logout.gohtml", "Username and/or password do not match")
 			return
 		}
 		// Matching of password entered
 		err := bcrypt.CompareHashAndPassword(viewData.User.Password, []byte(password))
 		if err != nil {
-			errorMessage = "Username and/or password do not match"
-			viewData.Msg.ErrorMessage = errorMessage
-			err := repo.Tmpl.ExecuteTemplate(res, "login_logout.gohtml", viewData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
+			ExecTemplate(res, "login_logout.gohtml", "Username and/or password do not match")
 			return
 		}
 		// Create a session
@@ -85,22 +79,19 @@ func (as *AuthService) Login(res http.ResponseWriter, req *http.Request) {
 
 		// Redirecting of the user either as an admin or regular user
 		if username == "admin" {
-			repo.Tmpl.ExecuteTemplate(res, "admin.gohtml", nil)
+			ExecTemplate(res, "admin.gohtml", "")
 		} else {
 			user.Attendance = true
 			user.TimeIn = timestamp
 			as.db.Users[username] = user
-
-			err := repo.Tmpl.ExecuteTemplate(res, "login_logout.gohtml", viewData)
-			if err != nil {
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
+			ExecTemplate(res, "login_logout.gohtml", "")
 		}
 		return
 	}
 
 	err := repo.Tmpl.ExecuteTemplate(res, "login_logout.gohtml", nil)
 	if err != nil {
+		as.db.Log.Println(err)
 		http.Error(res, "Error loading page.", http.StatusNotFound)
 	}
 }
@@ -118,18 +109,25 @@ func (as *AuthService) Signup(res http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
 		// get form values
 		username := req.FormValue("username")
+		username = strings.TrimSpace(username)
+		if containsSpace(username) {
+			ExecTemplate(res, "signup.gohtml", "Username & password should not contain any space")
+			return
+		}
+
 		password := req.FormValue("password")
+		password = strings.TrimSpace(password)
+		if containsSpace(password) {
+			ExecTemplate(res, "signup.gohtml", "Username & password should not contain any space")
+			return
+		}
+
 		firstname := req.FormValue("firstname")
 		lastname := req.FormValue("lastname")
 		if username != "" {
 			// check if username exist/ taken
 			if _, ok := as.db.Users[username]; ok {
-				errorMessage = "Username already taken"
-				viewData.Msg.ErrorMessage = errorMessage
-				err := repo.Tmpl.ExecuteTemplate(res, "signup.gohtml", viewData)
-				if err != nil {
-					http.Error(res, "Error loading page.", http.StatusNotFound)
-				}
+				ExecTemplate(res, "signup.gohtml", "Username already taken")
 				return
 			}
 			// create session
@@ -144,6 +142,7 @@ func (as *AuthService) Signup(res http.ResponseWriter, req *http.Request) {
 
 			bPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 			if err != nil {
+				as.db.Log.Println(err)
 				http.Error(res, "Internal server error", http.StatusInternalServerError)
 				return
 			}
@@ -179,4 +178,17 @@ func (as *AuthService) Logout(res http.ResponseWriter, req *http.Request) {
 	http.SetCookie(res, cookie)
 
 	http.Redirect(res, req, "/", http.StatusSeeOther)
+}
+
+func ExecTemplate(res http.ResponseWriter, template string, message string) {
+	errorMessage = message
+	viewData.Msg.ErrorMessage = errorMessage
+	err := repo.Tmpl.ExecuteTemplate(res, template, viewData)
+	if err != nil {
+		http.Error(res, "Error loading page.", http.StatusNotFound)
+	}
+}
+
+func containsSpace(s string) bool {
+	return strings.Contains(s, " ")
 }

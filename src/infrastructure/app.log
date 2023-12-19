@@ -1,0 +1,16 @@
+ERROR 2023/12/19 23:04:12 repo.go:294: <nil>
+ERROR 2023/12/19 23:04:20 repo.go:294: <nil>
+2023/12/19 23:06:15 http: TLS handshake error from 127.0.0.1:61712: remote error: tls: unknown certificate
+2023/12/19 23:16:12 http: TLS handshake error from 127.0.0.1:64180: remote error: tls: unknown certificate
+2023/12/19 23:17:17 http: TLS handshake error from 127.0.0.1:64451: remote error: tls: unknown certificate
+2023/12/19 23:27:37 http: TLS handshake error from 127.0.0.1:50642: remote error: tls: unknown certificate
+ERROR 2023/12/19 23:27:37 repo.go:236: request Content-Type isn't multipart/form-data
+ERROR 2023/12/19 23:27:44 repo.go:150: <nil>
+2023/12/19 23:28:56 http: TLS handshake error from 127.0.0.1:50966: remote error: tls: unknown certificate
+2023/12/19 23:30:08 http: TLS handshake error from 127.0.0.1:51142: remote error: tls: unknown certificate
+2023/12/19 23:30:11 http: TLS handshake error from 127.0.0.1:51146: remote error: tls: unknown certificate
+2023/12/19 23:30:18 http: TLS handshake error from 127.0.0.1:51149: remote error: tls: unknown certificate
+2023/12/19 23:33:10 http: TLS handshake error from 127.0.0.1:51145: EOF
+2023/12/19 23:50:43 http: TLS handshake error from 127.0.0.1:51849: remote error: tls: unknown certificate
+2023/12/19 23:54:27 http: TLS handshake error from 127.0.0.1:51903: remote error: tls: unknown certificate
+2023/12/19 23:54:54 http: TLS handshake error from 127.0.0.1:51907: remote error: tls: unknown certificate
