@@ -14,3 +14,67 @@ ERROR 2023/12/19 23:27:44 repo.go:150: <nil>
 2023/12/19 23:50:43 http: TLS handshake error from 127.0.0.1:51849: remote error: tls: unknown certificate
 2023/12/19 23:54:27 http: TLS handshake error from 127.0.0.1:51903: remote error: tls: unknown certificate
 2023/12/19 23:54:54 http: TLS handshake error from 127.0.0.1:51907: remote error: tls: unknown certificate
+2023/12/19 23:56:15 http: TLS handshake error from 127.0.0.1:51956: remote error: tls: unknown certificate
+2023/12/19 23:56:18 http: TLS handshake error from 127.0.0.1:51958: remote error: tls: unknown certificate
+2023/12/19 23:56:28 http: TLS handshake error from 127.0.0.1:51960: remote error: tls: unknown certificate
+2023/12/20 21:41:21 http: TLS handshake error from 127.0.0.1:52969: remote error: tls: unknown certificate
+2023/12/20 21:41:27 http: TLS handshake error from 127.0.0.1:52971: remote error: tls: unknown certificate
+2023/12/20 21:41:27 http: TLS handshake error from 127.0.0.1:52973: remote error: tls: unknown certificate
+2023/12/20 21:41:27 http: TLS handshake error from 127.0.0.1:52975: remote error: tls: unknown certificate
+2023/12/20 21:42:17 http: TLS handshake error from 127.0.0.1:52986: remote error: tls: unknown certificate
+2023/12/20 21:44:57 http: TLS handshake error from 127.0.0.1:53016: remote error: tls: unknown certificate
+2023/12/20 21:44:57 http: TLS handshake error from 127.0.0.1:53018: remote error: tls: unknown certificate
+2023/12/20 21:44:57 http: TLS handshake error from 127.0.0.1:53020: remote error: tls: unknown certificate
+2023/12/20 22:01:36 http: TLS handshake error from 127.0.0.1:55266: remote error: tls: unknown certificate
+2023/12/20 22:06:17 http: TLS handshake error from 127.0.0.1:49517: remote error: tls: unknown certificate
+2023/12/20 22:06:17 http: TLS handshake error from 127.0.0.1:49520: remote error: tls: unknown certificate
+2023/12/20 22:14:27 http: TLS handshake error from 127.0.0.1:49604: remote error: tls: unknown certificate
+2023/12/20 22:14:27 http: TLS handshake error from 127.0.0.1:49606: remote error: tls: unknown certificate
+2023/12/20 22:15:22 http: TLS handshake error from 127.0.0.1:49619: remote error: tls: unknown certificate
+2023/12/20 22:15:22 http: TLS handshake error from 127.0.0.1:49621: remote error: tls: unknown certificate
+2023/12/20 22:15:22 http: TLS handshake error from 127.0.0.1:49623: remote error: tls: unknown certificate
+2023/12/20 22:17:11 http: TLS handshake error from 127.0.0.1:49663: remote error: tls: unknown certificate
+2023/12/20 22:17:13 http: TLS handshake error from 127.0.0.1:49667: remote error: tls: unknown certificate
+2023/12/20 22:17:13 http: TLS handshake error from 127.0.0.1:49665: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:17:55 repo.go:298: invalid character ':' after array element
+ERROR 2023/12/20 22:18:11 repo.go:298: invalid character ':' after array element
+2023/12/20 22:18:11 http: TLS handshake error from 127.0.0.1:49657: EOF
+ERROR 2023/12/20 22:19:49 repo.go:298: invalid character ':' after array element
+2023/12/20 22:21:02 http: TLS handshake error from 127.0.0.1:49703: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:21:02 repo.go:236: request Content-Type isn't multipart/form-data
+ERROR 2023/12/20 22:21:16 repo.go:298: invalid character ':' after array element
+2023/12/20 22:21:39 http: TLS handshake error from 127.0.0.1:49729: remote error: tls: unknown certificate
+2023/12/20 22:21:42 http: TLS handshake error from 127.0.0.1:49735: remote error: tls: unknown certificate
+2023/12/20 22:21:42 http: TLS handshake error from 127.0.0.1:49733: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:22:08 repo.go:298: invalid character ':' after array element
+2023/12/20 22:24:46 http: TLS handshake error from 127.0.0.1:49760: remote error: tls: unknown certificate
+2023/12/20 22:27:14 http: TLS handshake error from 127.0.0.1:49808: remote error: tls: unknown certificate
+2023/12/20 22:27:15 http: TLS handshake error from 127.0.0.1:49810: remote error: tls: unknown certificate
+2023/12/20 22:27:15 http: TLS handshake error from 127.0.0.1:49812: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:27:42 repo.go:277: invalid character ':' after array element
+ERROR 2023/12/20 22:28:41 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+ERROR 2023/12/20 22:31:09 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+ERROR 2023/12/20 22:31:13 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+ERROR 2023/12/20 22:31:31 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+ERROR 2023/12/20 22:33:12 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+2023/12/20 22:36:09 http: TLS handshake error from 127.0.0.1:50910: remote error: tls: unknown certificate
+2023/12/20 22:36:09 http: TLS handshake error from 127.0.0.1:50912: remote error: tls: unknown certificate
+2023/12/20 22:37:26 http: TLS handshake error from 127.0.0.1:51073: remote error: tls: unknown certificate
+2023/12/20 22:37:28 http: TLS handshake error from 127.0.0.1:51075: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:37:55 repo.go:277: XML syntax error on line 8: element <users> closed by </user>
+2023/12/20 22:41:17 http: TLS handshake error from 127.0.0.1:51127: remote error: tls: unknown certificate
+2023/12/20 22:41:21 http: TLS handshake error from 127.0.0.1:51130: remote error: tls: unknown certificate
+ERROR 2023/12/20 22:41:39 repo.go:285: XML syntax error on line 8: element <users> closed by </user>
+2023/12/20 22:43:38 http: TLS handshake error from 127.0.0.1:51166: remote error: tls: unknown certificate
+2023/12/20 22:43:39 http: TLS handshake error from 127.0.0.1:51172: remote error: tls: unknown certificate
+2023/12/20 22:43:39 http: TLS handshake error from 127.0.0.1:51168: remote error: tls: unknown certificate
+2023/12/20 22:48:58 http: TLS handshake error from 127.0.0.1:51215: remote error: tls: unknown certificate
+2023/12/20 22:49:01 http: TLS handshake error from 127.0.0.1:51217: remote error: tls: unknown certificate
+2023/12/20 22:49:01 http: TLS handshake error from 127.0.0.1:51219: remote error: tls: unknown certificate
+2023/12/20 22:52:14 http: TLS handshake error from 127.0.0.1:51255: remote error: tls: unknown certificate
+2023/12/20 22:52:17 http: TLS handshake error from 127.0.0.1:51264: remote error: tls: unknown certificate
+2023/12/20 22:52:17 http: TLS handshake error from 127.0.0.1:51262: remote error: tls: unknown certificate
+2023/12/20 22:54:50 http: TLS handshake error from 127.0.0.1:51287: remote error: tls: unknown certificate
+2023/12/20 22:56:06 http: TLS handshake error from 127.0.0.1:51296: remote error: tls: unknown certificate
+2023/12/20 23:04:59 http: TLS handshake error from 127.0.0.1:51851: remote error: tls: unknown certificate
+2023/12/20 23:05:00 http: TLS handshake error from 127.0.0.1:51853: remote error: tls: unknown certificate

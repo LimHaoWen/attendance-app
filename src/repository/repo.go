@@ -116,6 +116,9 @@ func (d *Db) AlreadyLoggedIn(req *http.Request) bool {
 // ExportAttendnace exports the current attendance base on the file type chosen
 // by the user. Files are stored in the data subfolders based on type of file specified.
 func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	res.Header().Set("Pragma", "no-cache")
+
 	user := d.GetUser(res, req)
 	if user.Username != "admin" {
 		http.Redirect(res, req, "/", http.StatusSeeOther)
@@ -156,7 +159,7 @@ func (d *Db) ExportAttendance(res http.ResponseWriter, req *http.Request) {
 		user := d.GetUser(res, req)
 		viewData.User = user
 		errorMessage = "Error marshaling " + fileType
-		viewData.Msg.ErrorMessage = errorMessage
+		viewData.Msg.ExportedMessage = errorMessage
 		err := Tmpl.ExecuteTemplate(res, "admin.gohtml", viewData)
 		if err != nil {
 			d.Log.Println(err)
@@ -221,6 +224,9 @@ func (d *Db) exportCSV(data []User) ([]byte, error) {
 // ImportAttendance parses a file uploaded by the user and adds the data into
 // the database.
 func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	res.Header().Set("Pragma", "no-cache")
+
 	user := d.GetUser(res, req)
 	if user.Username != "admin" {
 		http.Redirect(res, req, "/", http.StatusSeeOther)
@@ -252,19 +258,6 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 		err = xml.Unmarshal(importData, &usersData)
-		if err != nil {
-			d.Log.Println(err)
-			myUser := d.GetUser(res, req)
-			adminData := ViewData{User: myUser}
-			errorMessage = "Error unmarshaling " + fileType
-			viewData.Msg.ErrorMessage = errorMessage
-			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				d.Log.Println(err)
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
 	case "csv":
 		importData, err = io.ReadAll(file)
 		if err != nil {
@@ -273,19 +266,6 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 		usersData.Users, err = d.importCSV(importData)
-		if err != nil {
-			d.Log.Println(err)
-			myUser := d.GetUser(res, req)
-			adminData := ViewData{User: myUser}
-			errorMessage := "Error unmarshaling " + fileType
-			viewData.Msg.ErrorMessage = errorMessage
-			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				d.Log.Println(err)
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
 	case "json":
 		importData, err = io.ReadAll(file)
 		if err != nil {
@@ -294,22 +274,22 @@ func (d *Db) ImportAttendance(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 		err = json.Unmarshal(importData, &usersData.Users)
-		if err != nil {
-			d.Log.Println(err)
-			myUser := d.GetUser(res, req)
-			adminData := ViewData{User: myUser}
-			errorMessage := "Error unmarshaling " + fileType
-			viewData.Msg.ErrorMessage = errorMessage
-			err := Tmpl.ExecuteTemplate(res, "admin.gohtml", adminData)
-			if err != nil {
-				d.Log.Println(err)
-				http.Error(res, "Error loading page.", http.StatusNotFound)
-			}
-			return
-		}
 	default:
 		d.Log.Println(err)
 		http.Error(res, "Unsupported file type", http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		d.Log.Println(err)
+		myUser := d.GetUser(res, req)
+		viewData := ViewData{User: myUser}
+		errorMessage := "Error unmarshaling " + fileName.Filename
+		viewData.Msg.LoadedMessage = errorMessage
+		err := Tmpl.ExecuteTemplate(res, "admin.gohtml", viewData)
+		if err != nil {
+			d.Log.Println(err)
+			http.Error(res, "Error loading page.", http.StatusNotFound)
+		}
 		return
 	}
 
@@ -393,5 +373,8 @@ func (d *Db) importCSV(data []byte) ([]User, error) {
 
 // ViewAttendance displays the attendance list that is currently uploaded and in use.
 func (d *Db) ViewAttendance(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	res.Header().Set("Pragma", "no-cache")
+
 	Tmpl.ExecuteTemplate(res, "attendance.gohtml", d)
 }

@@ -20,9 +20,6 @@
                 {{ if .Msg.ExportedMessage }}
                     <p>{{ .Msg.ExportedMessage }}</p>
                 {{ end }}
-                {{ if .Msg.ErrorMessage }}
-                    <p>{{ .Msg.ErrorMessage }}</p>
-                {{ end }}
                 <label for="fileType">Select File Type:</label>
                 <select name="fileType" id="fileType">
                     <option value="json">JSON</option>

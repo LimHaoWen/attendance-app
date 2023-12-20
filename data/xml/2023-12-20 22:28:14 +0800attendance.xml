@@ -1,0 +1,11 @@
+<users>
+
+    <password>$2a$04$8qfG7KjmlUXTDui7A1ayeuIW97A7dYVRl75yoOt.ow4MMMThuzmsy</password>
+    <first>admin</first>
+    <last>admin</last>
+    <time_in>0001-01-01T00:00:00Z</time_in>
+    <attendnace>false</attendnace>
+  </user>
+</users>
+
+<!-- Test importing corrupted file -->
